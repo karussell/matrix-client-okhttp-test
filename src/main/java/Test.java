@@ -25,7 +25,7 @@ public class Test {
                 if (!rsp.getErrors().isEmpty())
                     System.err.println(new Date() + " should not happen " + rsp.getErrors());
             } catch (Exception ex) {
-                ex.printStackTrace();
+                // ex.printStackTrace();
                 System.err.println(new Date() + " exception " + ex.getMessage());
             }
             Thread.sleep(sleep);
