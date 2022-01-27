@@ -22,10 +22,13 @@ public class Test {
             exec.submit(() -> {
                         while (true) {
                             if (infoLog)
-                                System.out.println("[" + threadIdx + "] " + new Date() + " request");
+                                System.out.println("[" + threadIdx + "] " + new Date().toInstant() + " request");
                             GHMRequest req = new GHMRequest();
-                            req.addPoint(new GHPoint(51.534377, -0.087891));
-                            req.addPoint(new GHPoint(51.467697, -0.090637));
+                            // we do not care about the actual matrix. The request and response just shouldn't be too small:
+                            for (int j = 0; j < 50; j++) {
+                                req.addPoint(new GHPoint(51.534377, -0.087891));
+                                req.addPoint(new GHPoint(51.467697, -0.090637));
+                            }
                             try {
                                 MatrixResponse rsp = matrix.route(req);
                                 if (!rsp.getErrors().isEmpty())
