@@ -1,16 +1,27 @@
 import com.graphhopper.api.GHMRequest;
+import com.graphhopper.api.GHMatrixSyncRequester;
 import com.graphhopper.api.GraphHopperMatrixWeb;
 import com.graphhopper.api.MatrixResponse;
 import com.graphhopper.util.shapes.GHPoint;
+import okhttp3.OkHttpClient;
 
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Test {
-    public static void main(String[] args) throws InterruptedException {
 
-        GraphHopperMatrixWeb matrix = new GraphHopperMatrixWeb();
+    // java -jar some.jar [API_KEY] [sleep_in_ms] [enable_log] [threads] [add_gzip_interceptor]
+    public static void main(String[] args) {
+        boolean addGzipInterceptor = args.length > 4 ? Boolean.parseBoolean(args[4]) : false;
+        OkHttpClient.Builder okClientBuilder = new OkHttpClient.Builder().
+                readTimeout(10, TimeUnit.SECONDS).
+                connectTimeout(10, TimeUnit.SECONDS);
+
+        if (addGzipInterceptor) okClientBuilder.addInterceptor(new GzipRequestInterceptor());
+
+        GraphHopperMatrixWeb matrix = new GraphHopperMatrixWeb(new GHMatrixSyncRequester().setDownloader(okClientBuilder.build()));
         if (args.length > 0)
             matrix.setKey(args[0]);
         long sleep = args.length > 1 ? Integer.parseInt(args[1]) : 1000;
