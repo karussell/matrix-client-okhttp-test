@@ -32,21 +32,25 @@ public class Test {
             final int threadIdx = i;
             exec.submit(() -> {
                         while (true) {
-                            if (infoLog)
-                                System.out.println("[" + threadIdx + "] " + new Date().toInstant() + " request");
                             GHMRequest req = new GHMRequest();
                             // we do not care about the actual matrix. The request and response just shouldn't be too small:
                             for (int j = 0; j < 50; j++) {
                                 req.addPoint(new GHPoint(51.534377, -0.087891));
                                 req.addPoint(new GHPoint(51.467697, -0.090637));
                             }
+                            long start = System.currentTimeMillis();
                             try {
                                 MatrixResponse rsp = matrix.route(req);
-                                if (!rsp.getErrors().isEmpty())
-                                    System.err.println("[" + threadIdx + "] " + new Date() + " should not happen " + rsp.getErrors());
+                                float seconds = (System.currentTimeMillis() - start) / 1000f;
+                                if (!rsp.getErrors().isEmpty()) {
+                                    System.err.println("[" + threadIdx + "] " + new Date().toInstant() + " should not happen " + rsp.getErrors() + ", took: " + seconds);
+                                } else if (infoLog) {
+                                    System.out.println("[" + threadIdx + "] " + new Date().toInstant() + " request, took: " + seconds);
+                                }
                             } catch (Exception ex) {
                                 // ex.printStackTrace();
-                                System.err.println("[" + threadIdx + "] " + new Date() + " exception " + ex.getMessage());
+                                float seconds = (System.currentTimeMillis() - start) / 1000f;
+                                System.err.println("[" + threadIdx + "] " + new Date().toInstant() + " exception " + ex.getMessage() + ", took: " + seconds);
                             }
                             Thread.sleep(sleep);
                         }
